@@ -5,6 +5,27 @@
     <title>Lingua</title>
 </head>
 <body>
-  aouisdhasoidhaoidj
+    <h1>Lingua</h1>
+    <h4>slogan here</h4>
+    <form action="/">
+        <label for="name">What is your name?</label><br>
+        <input type="text" name="name" id="name"><br><br>
+
+        <label for="lang">What language do you speak?</label><br>
+        <select name="language" id="lang">
+            {% for lang in languages %}
+                <option value="{{ lang }}">{{ lang }}</option><br>
+            {% endfor %}
+        </select>
+        <br>
+        <br>
+        <u>(Optional) Select topics to talk about</u><br>
+            {% for topic in topics %}
+                <input type="checkbox" id="{{ topic }}" name="{{ topic }}" value="{{ topic }}">
+                <label for = "{{ topic }}"></label><br>
+            {% endfor %}
+        <br>
+        <input type="submit" value="Get Started">
+    </form>
 </body>
 </html>
