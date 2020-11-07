@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Lingua</title>
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block body %}
     <h1>Lingua</h1>
     <h4>slogan here</h4>
     <form action="/">
@@ -17,15 +13,13 @@
                 <option value="{{ lang }}">{{ lang }}</option><br>
             {% endfor %}
         </select>
-        <br>
-        <br>
-        <u>(Optional) Select topics to talk about</u><br>
+        <br><br>
+        <u>(Optional) Select topics to talk about:</u><br>
             {% for topic in topics %}
                 <input type="checkbox" id="{{ topic }}" name="{{ topic }}" value="{{ topic }}">
-                <label for = "{{ topic }}"></label><br>
+                <label for="{{ topic }}">{{ topic }}</label><br>
             {% endfor %}
-        <br>
+        <br><br>
         <input type="submit" value="Get Started">
     </form>
-</body>
-</html>
+{% endblock %}
