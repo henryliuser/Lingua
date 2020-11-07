@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Lingua</h1>
     <h4>slogan here</h4>
-    <form action="/">
+    <form action="/new_user">
         <label for="name">What is your name?</label><br>
         <input type="text" name="name" id="name"><br><br>
 
@@ -20,6 +20,15 @@
                 <label for="{{ topic }}">{{ topic }}</label><br>
             {% endfor %}
         <br><br>
-        <input type="submit" value="Get Started">
+        <input type="submit" value="Get Started" onsubmit="checkValidity()">
     </form>
+    <script type="text/javascript">
+        function checkValidity() {
+            var nameInput = document.getElementById("name").value;
+            var langInput = document.getElementById("lang").value;
+            if (nameInput.length === 0 || !langInput) {
+                alert("You haven't filled out the name and language!");
+            }
+        }
+    </script>
 {% endblock %}
