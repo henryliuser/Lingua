@@ -12,16 +12,33 @@
     socket.on('SID', function(a) {
         sid = a;
     });
-    socket.on('user created', function(uname, ulang) {
+
+    socket.on('user created', function(usid, uname, ulang) {
         name = uname;
         lang = ulang;
+
+        $("#myBubble").animate({left:"15%"},1000);
+        $("#myBubbleTitle").fadeOut(500);
+        setTimeout(function(){
+          $("#myBubbleTitle").text(uname);
+          $("#myBubbleTitle").fadeIn(500);
+        }, 500);
+
     });
     socket.on('loop search', function() {
         searching = true;
     });
-    socket.on('found', function() {
+    socket.on('found', function(name, langu) {
         searching = false;
-        $("#chat").show();
+        $("#chat").fadeIn(500);
+        $("#awaiting").text("Say hi! You are connected to: " + name);
+        $("#row").append('<div id="otBubble" style="position: absolute;right:3%;top:7%;text-align: center;color: white;"> </div>');
+        var otb = $("#otBubble")
+        otb.hide();
+        otb.fadeIn(500);
+        otb.append('<img src="/static/circle3.png">');
+        otb.append('<h1 id="otBubbleTitle" style="color:black; font-size: 40px;position:absolute; top:30%; left:50%;transform: translate(-50%, -50%);">'+name+ '</h1>');
+        otb.append($('<li>').text(langu));
     });
     socket.on('chat message', function(name, msg) {
         $("#messages").append($('<li>').text(name + ": " + msg));
@@ -40,7 +57,8 @@
 
     setInterval(function(){
       if (searching) { socket.emit('search', sid); }
-    }, 5000);
+    }, 5000)
+
     $(function () {
     $('#form2').submit(function(e) {
       e.preventDefault(); // prevents page reloading
@@ -57,33 +75,47 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font: 13px Helvetica, Arial; }
-  #form2 { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-  #m { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
-  #b { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+  #form2 { background: #000; padding: 3px; position: fixed; bottom: 15%; width: 30%; }
+  #m { border: 0; padding: 10px; width:89%; margin-right: 0.5%; }
+  #b { width: 10%; background: rgb(130, 224, 255); border: none; padding: 10px; text-align:left; }
   #messages { list-style-type: none; margin: 0; padding: 0; }
   #messages li { padding: 5px 10px; }
   #messages li:nth-child(odd) { background: #eee; }
 </style>
+<!--<body style="background-color:#99FDD6;">-->
 <body>
-    <h1>
-        Please enter your information:
-    </h1>
-   <form>
-    <input id="name" name="name" placeholder="Name" type="text">
-    <select id='lang' name="Language">
-        <option disabled selected value="">Language</option>
-        <option value="English">English</option>
-        <option value="French">French</option>
-        <option value="Spanish">Spanish</option>
-    </select>
-       <button type="button" id="myBtn">Go!</button>
-    </form>
-    <h1 id="awaiting"></h1>
-    <div id="chat">
+
+    <div>&nbsp;</div>
+    <h1 id="awaiting" style="text-align:center;">&nbsp;</h1>
+    <div>&nbsp;</div>
+    <div id="row">
+    <div id="myBubble" style="position:absolute; text-align:center; top:7%; left:50%; transform: translateX(-50%); color: white;">
+<!--        /Users/henryliu/PycharmProjects/Lingua/templates/static/circle1.png-->
+        <img src="/static/circle3.png">
+        <h1 id="myBubbleTitle" style="color:black; font-size: 40px;position:absolute; top:30%; left:50%;transform: translate(-50%, -50%);">
+                LINGUA
+        </h1>
+        <div style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">
+
+            <form>
+                <input id="name" name="name" placeholder="Name" type="text">
+                <select id='lang' name="Language">
+                    <option disabled selected value="">Language</option>
+                    <option value="English">English</option>
+                    <option value="French">French</option>
+                    <option value="Spanish">Spanish</option>
+                </select>
+                   <button type="button" id="myBtn">Go!</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="chat" style="position:absolute; left:35%;bottom:20%; margin:auto; width:30%;z-index:-100">
         <ul id="messages"></ul>
         <form id="form2" action="">
           <input id="m" autocomplete="off" /><button id ="b">Send</button>
         </form>
+    </div>
     </div>
 </body>
 </html>

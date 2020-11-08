@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, emit
-from uuid import uuid4
 from queue import Queue
-from flask_socketio import join_room, leave_room
+# from flask_socketio import join_room, leave_room
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -10,7 +9,7 @@ socketio = SocketIO(app)
 
 users_online = {}
 lang_queues = {}
-languages = ["English", "Spanish", "French"]
+languages = [None, "English", "Spanish", "French"]
 for lang in languages:
     lang_queues[lang] = Queue()
 
@@ -24,13 +23,13 @@ class User:
         self.partner = part
         part.partner = self
         print(f"{self.name} CONNECTED TO {part.name}")
-        emit("found", room=part.sid)
+        emit("found", (self.name,self.language), room=part.sid)
     def search(self):
         temp = lang_queues[self.language].queue
         if not lang_queues[self.language].empty() and not temp[0] is self:
             u = lang_queues[self.language].get()
             self.connect(u)
-            return True
+            return u
         return False
 
 
@@ -57,11 +56,12 @@ def handle_message(sid, msg):
 def new_user(sid, name, language):
     u = User(sid, name, language)
     users_online[sid] = u
-    if not u.search():
+    other = u.search()
+    if not other:
         emit("loop search")
         lang_queues[language].put(u)
     else:
-        emit("found")
+        emit("found", (other.name, other.language))
     emit("user created", (sid, name, language))
     print(f"Welcome {name}, speaking {language}, ID: {sid}!")
 
@@ -83,8 +83,9 @@ def on_leave(data):
 
 @socketio.on("search")
 def search(sid):
-    if users_online[sid].search():
-       emit("found")
+    other = users_online[sid].search()
+    if other:
+       emit("found", other.name)
 
 if __name__ == '__main__':
     socketio.run(app)
