@@ -23,6 +23,9 @@
         searching = false;
         $("#chat").show();
     });
+    socket.on('chat message', function(name, msg) {
+        $("#messages").append($('<li>').text(name + ": " + msg));
+    });
     $(document).ready(function(){
     $("#chat").hide();
     // Get value on button click and show alert
@@ -34,13 +37,14 @@
             $("#myBtn").remove();
         });
     });
+
     setInterval(function(){
       if (searching) { socket.emit('search', sid); }
     }, 5000);
     $(function () {
     $('#form2').submit(function(e) {
       e.preventDefault(); // prevents page reloading
-      socket.emit('chat message', $('#m').val());
+      socket.emit('chat message', sid, $('#m').val());
       $('#m').val('');
       return false;
     });

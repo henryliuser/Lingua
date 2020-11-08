@@ -47,8 +47,11 @@ def on_connect():
     emit("SID", request.sid)
 
 @socketio.on("chat message")
-def handle_message(message):
-    print(message)
+def handle_message(sid, msg):
+    sender = users_online[sid]
+    print(f"{sender.name} --> {sender.partner.name}: {msg}")
+    emit("chat message", (sender.name, msg))
+    emit("chat message", (sender.name, msg), room=sender.partner.sid)
 
 @socketio.on("new user")
 def new_user(sid, name, language):
