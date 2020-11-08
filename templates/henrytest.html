@@ -1,17 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script type="text/javascript" charset="utf-8">
     var socket = io();
-    socket.on('connect', function() {
-        socket.emit('my event', {data: 'I\'m connected!'});
+    var sid;
+    var name;
+    var lang;
+    var searching = false;
+
+    socket.on('SID', function(a) {
+        sid = a;
     });
+    socket.on('user created', function(uname, ulang) {
+        name = uname;
+        lang = ulang;
+    });
+    socket.on('loop search', function() {
+        searching = true;
+    });
+    socket.on('found', function() {
+        searching = false;
+        $("#chat").show();
+    });
+    $(document).ready(function(){
+    $("#chat").hide();
+    // Get value on button click and show alert
+        $("#myBtn").click(function(){
+            var name = $("#name").val();
+            var lang = $("#lang").val();
+            socket.emit('new user', sid, name, lang);
+            $("#awaiting").text("Currently looking far and wide to find a partner for you!");
+            $("#myBtn").remove();
+        });
+    });
+    setInterval(function(){
+      if (searching) { socket.emit('search', sid); }
+    }, 5000);
+    $(function () {
+    $('#form2').submit(function(e) {
+      e.preventDefault(); // prevents page reloading
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+  });
 </script>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font: 13px Helvetica, Arial; }
+  #form2 { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+  #m { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
+  #b { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+  #messages { list-style-type: none; margin: 0; padding: 0; }
+  #messages li { padding: 5px 10px; }
+  #messages li:nth-child(odd) { background: #eee; }
+</style>
 <body>
-IOUAHSIUHSIUHF
+    <h1>
+        Please enter your information:
+    </h1>
+   <form>
+    <input id="name" name="name" placeholder="Name" type="text">
+    <select id='lang' name="Language">
+        <option disabled selected value="">Language</option>
+        <option value="English">English</option>
+        <option value="French">French</option>
+        <option value="Spanish">Spanish</option>
+    </select>
+       <button type="button" id="myBtn">Go!</button>
+    </form>
+    <h1 id="awaiting"></h1>
+    <div id="chat">
+        <ul id="messages"></ul>
+        <form id="form2" action="">
+          <input id="m" autocomplete="off" /><button id ="b">Send</button>
+        </form>
+    </div>
 </body>
 </html>
