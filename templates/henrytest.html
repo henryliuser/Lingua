@@ -8,6 +8,9 @@
     var name;
     var lang;
     var searching = false;
+    var timer = -1;
+
+
 
     socket.on('SID', function(a) {
         sid = a;
@@ -29,6 +32,7 @@
         searching = true;
     });
     socket.on('found', function(name, langu) {
+        timer = 300;
         searching = false;
         $("#chat").fadeIn(500);
         $("#awaiting").text("Say hi! You are connected to: " + name);
@@ -39,6 +43,10 @@
         otb.append('<img src="/static/circle3.png">');
         otb.append('<h1 id="otBubbleTitle" style="color:black; font-size: 40px;position:absolute; top:30%; left:50%;transform: translate(-50%, -50%);">'+name+ '</h1>');
         otb.append($('<li>').text(langu));
+        socket.emit("topic request", sid);
+    });
+    socket.on('receive topic', function(topic) {
+        $("#topic").text(topic);
     });
     socket.on('chat message', function(name, msg) {
         $("#messages").append($('<li>').text(name + ": " + msg));
@@ -53,11 +61,33 @@
             $("#awaiting").text("Currently looking far and wide to find a partner for you!");
             $("#myBtn").remove();
         });
+        $('#newtopic').click(function(){
+            socket.emit("topic request", sid);
+        });
+        $('#transcend').click(function(){
+            socket.emit("transcend", sid, $('#m').val());
+            $('#m').val('');
+        });
     });
 
     setInterval(function(){
       if (searching) { socket.emit('search', sid); }
     }, 5000)
+
+
+    setInterval(function(){
+       if (timer > 0) {
+           timer = timer - 1;
+           $("#timer").text(timer);
+       }
+       if (timer == 0) {
+           socket.emit("timeout", sid);
+           $("#myBubble").animate({left:"50%"});
+           $("#otBubble").remove();
+       }
+    }, 1000)
+
+
 
     $(function () {
     $('#form2').submit(function(e) {
@@ -71,16 +101,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="lingua_style.css">
 </head>
+
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font: 13px Helvetica, Arial; }
-  #form2 { background: #000; padding: 3px; position: fixed; bottom: 15%; width: 30%; }
+  #form2 { background: #000; padding: 3px; position: fixed; bottom: 13%; width: 30%; }
   #m { border: 0; padding: 10px; width:89%; margin-right: 0.5%; }
   #b { width: 10%; background: rgb(130, 224, 255); border: none; padding: 10px; text-align:left; }
   #messages { list-style-type: none; margin: 0; padding: 0; }
   #messages li { padding: 5px 10px; }
   #messages li:nth-child(odd) { background: #eee; }
+  #myBtn:hover {background-color: mediumseagreen;}
+
 </style>
 <!--<body style="background-color:#99FDD6;">-->
 <body>
@@ -88,24 +122,48 @@
     <div>&nbsp;</div>
     <h1 id="awaiting" style="text-align:center;">&nbsp;</h1>
     <div>&nbsp;</div>
+    <h2 id="topic" style="z-index:200;text-align:center">&nbsp;</h2>
+    <div>&nbsp;</div>
+    <h3 id="timer" style="text-align:center">&nbsp;</h3>
     <div id="row">
     <div id="myBubble" style="position:absolute; text-align:center; top:7%; left:50%; transform: translateX(-50%); color: white;">
 <!--        /Users/henryliu/PycharmProjects/Lingua/templates/static/circle1.png-->
         <img src="/static/circle3.png">
         <h1 id="myBubbleTitle" style="color:black; font-size: 40px;position:absolute; top:30%; left:50%;transform: translate(-50%, -50%);">
-                LINGUA
+                <img src="static/lingua_logo.png">
         </h1>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
+        <div>&nbsp;</div>
         <div style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">
 
             <form>
-                <input id="name" name="name" placeholder="Name" type="text">
-                <select id='lang' name="Language">
+                <input id="name" style="padding: 10px;border-width: 0.5px;border-radius: 8px;"  name="name" placeholder="Name" type="text">
+                <div>&nbsp;</div>
+                <select style="padding: 10px 20px;border-radius: 8px;"id='lang' name="Language">
                     <option disabled selected value="">Language</option>
                     <option value="English">English</option>
                     <option value="French">French</option>
                     <option value="Spanish">Spanish</option>
+                    <option value="Chinese (Simplified)">Chinese Simplified</option>
+                    <option value="Chinese (Traditional)">Chinese Traditional</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Swahili">Swahili</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="German">German</option>
+                    <option value="Korean">Korean</option>
+                    <option value="Filipino">Filipino</option>
+                    <option value="Portuguese">Portuguese</option>
                 </select>
-                   <button type="button" id="myBtn">Go!</button>
+                   <button type="button" style="background-color: cornflowerblue;border: none;border-radius: 8px;color: white;padding: 10px 12px;"id="myBtn">Go!</button>
             </form>
         </div>
     </div>
@@ -115,7 +173,14 @@
         <form id="form2" action="">
           <input id="m" autocomplete="off" /><button id ="b">Send</button>
         </form>
+        <div>
+            <button id="newtopic">Next Topic</button>
+            <button id="transcend">Translate & Send</button>
+        </div>
     </div>
+
     </div>
+
+
 </body>
 </html>

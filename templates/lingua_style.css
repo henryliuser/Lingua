@@ -1,0 +1,98 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font: 13px Helvetica, Arial;
+}
+h1 {
+    text-align: center;
+    font: 50px Helvetica, Arial;
+    font-stretch: condensed;
+}
+#slogan {
+    text-align: center;
+    padding-bottom: 15px;
+    font: 18px Helvetica, Arial;
+    font-style: italic;
+    font-stretch: condensed;
+    font-weight: 200;
+    color: rgb(125, 125, 125);
+}
+h2{
+    text-align: center;
+    color: darkslateblue;
+    font: 18px Georgia, serif;
+    font-style: italic;
+    padding-bottom: 2px;
+}
+#form1 {
+    text-align: center;
+    box-sizing: border-box;
+    padding: 15px;
+    margin-left: 35%;
+    margin-right: 35%;
+    width: 30%;
+    border-radius: 10px;
+    box-shadow: 0 0 15px 4px rgba(0, 0,0, 0.1);
+}
+input[type=text] {
+    padding: 10px;
+    border-width: 0.5px;
+    border-radius: 8px;
+}
+input[type=text]:hover {
+    background-color: whitesmoke;
+}
+select {
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+select:hover {
+    background-color: whitesmoke;
+}
+option {
+    font-family: Verdana;
+    font-stretch: condensed;
+}
+#myBtn {
+    background-color: cornflowerblue;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 10px 12px;
+}
+#myBtn:hover {
+    background-color: mediumseagreen;
+}
+#form2 {
+    background: #000;
+    padding: 3px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+#m {
+    border: 0;
+    padding: 10px;
+    width: 90%;
+    margin-right: 0.5%;
+}
+#b {
+    width: 9%;
+    background: rgb(130, 224, 255);
+    border: none;
+    padding: 10px;
+}
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+#messages li {
+    padding: 5px 10px;
+}
+#messages li:nth-child(odd) {
+    background: #eee;
+}
